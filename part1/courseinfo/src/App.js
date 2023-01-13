@@ -43,7 +43,6 @@ const App = () => {
     ]
   }
 
-
   return (
     <>
       <Header course={course.name} />
