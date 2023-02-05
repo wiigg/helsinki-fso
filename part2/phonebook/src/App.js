@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personsService from "./services/persons";
 
 const Filter = ({ filter, handleFilter }) => (
   <div>
@@ -27,16 +27,17 @@ const PersonForm = ({
   </form>
 );
 
-const Person = ({ person }) => (
+const Person = ({ person, deletePerson }) => (
   <div>
-    {person.name} {person.number}
+    {person.name} {person.number}{" "}
+    <button onClick={() => deletePerson(person.id)}>delete</button>
   </div>
 );
 
-const Persons = ({ personsToShow }) => (
+const Persons = ({ personsToShow, deletePerson }) => (
   <div>
     {personsToShow.map((person) => (
-      <Person key={person.name} person={person} />
+      <Person key={person.name} person={person} deletePerson={deletePerson} />
     ))}
   </div>
 );
@@ -48,10 +49,10 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response => {setPersons(response.data)})
-  }, [])
+    personsService.getAll().then((response) => {
+      setPersons(response);
+    });
+  }, []);
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -79,9 +80,23 @@ const App = () => {
       number: newPhone,
     };
 
-    setPersons(persons.concat(personObject));
-    setNewName("");
-    setNewPhone("");
+    personsService.create(personObject).then((response) => {
+      setPersons(persons.concat(response));
+      setNewName("");
+      setNewPhone("");
+    });
+  };
+
+  const deletePerson = (id) => {
+    const person = persons.find((person) => person.id === id);
+
+    const confirm = window.confirm(`Delete ${person.name}?`);
+
+    if (confirm) {
+      personsService.remove(person.id).then((response) => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
   };
 
   const personsToShow = filter
@@ -105,7 +120,7 @@ const App = () => {
       />
 
       <h2>Directory</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   );
 };
