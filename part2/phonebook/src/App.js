@@ -69,8 +69,10 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
 
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already in the phonebook`);
+    const person = persons.find((person) => person.name === newName);
+
+    if (person) {
+      changeNumber(person.id);
       return;
     }
 
@@ -95,6 +97,22 @@ const App = () => {
     if (confirm) {
       personsService.remove(person.id).then((response) => {
         setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
+
+  const changeNumber = (id) => {
+    const person = persons.find((person) => person.id === id);
+
+    const confirm = window.confirm(`${person.name} is already in the phonebook, replace the old number with a new one?`);
+
+    if (confirm) {
+      const changedPerson = { ...person, number: newPhone };
+
+      personsService.update(id, changedPerson).then((response) => {
+        setPersons(persons.map((person) => person.id !== id ? person : response));
+        setNewName("");
+        setNewPhone("");
       });
     }
   };
