@@ -1,52 +1,16 @@
 import { useState, useEffect } from "react";
 import personsService from "./services/persons";
-
-const Filter = ({ filter, handleFilter }) => (
-  <div>
-    filter: <input value={filter} onChange={handleFilter} />
-  </div>
-);
-
-const PersonForm = ({
-  addPerson,
-  newName,
-  handleNameChange,
-  newPhone,
-  handlePhoneChange,
-}) => (
-  <form onSubmit={addPerson}>
-    <div>
-      name: <input value={newName} onChange={handleNameChange} />
-    </div>
-    <div>
-      number: <input value={newPhone} onChange={handlePhoneChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-);
-
-const Person = ({ person, deletePerson }) => (
-  <div>
-    {person.name} {person.number}{" "}
-    <button onClick={() => deletePerson(person.id)}>delete</button>
-  </div>
-);
-
-const Persons = ({ personsToShow, deletePerson }) => (
-  <div>
-    {personsToShow.map((person) => (
-      <Person key={person.name} person={person} deletePerson={deletePerson} />
-    ))}
-  </div>
-);
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -86,6 +50,10 @@ const App = () => {
       setPersons(persons.concat(response));
       setNewName("");
       setNewPhone("");
+      setMessage(`Added ${response.name}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     });
   };
 
@@ -104,15 +72,23 @@ const App = () => {
   const changeNumber = (id) => {
     const person = persons.find((person) => person.id === id);
 
-    const confirm = window.confirm(`${person.name} is already in the phonebook, replace the old number with a new one?`);
+    const confirm = window.confirm(
+      `${person.name} is already in the phonebook, replace the old number with a new one?`
+    );
 
     if (confirm) {
       const changedPerson = { ...person, number: newPhone };
 
       personsService.update(id, changedPerson).then((response) => {
-        setPersons(persons.map((person) => person.id !== id ? person : response));
+        setPersons(
+          persons.map((person) => (person.id !== id ? person : response))
+        );
         setNewName("");
         setNewPhone("");
+        setMessage(`Updated ${response.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       });
     }
   };
@@ -126,6 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} handleFilter={handleFilter} />
 
       <h2>Add New</h2>
