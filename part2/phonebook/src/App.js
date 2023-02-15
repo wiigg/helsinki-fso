@@ -10,7 +10,9 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [filter, setFilter] = useState("");
+
   const [message, setMessage] = useState(null);
+  const [colour, setColour] = useState("");
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -50,7 +52,10 @@ const App = () => {
       setPersons(persons.concat(response));
       setNewName("");
       setNewPhone("");
+
       setMessage(`Added ${response.name}`);
+      setColour("green");
+
       setTimeout(() => {
         setMessage(null);
       }, 5000);
@@ -79,17 +84,28 @@ const App = () => {
     if (confirm) {
       const changedPerson = { ...person, number: newPhone };
 
-      personsService.update(id, changedPerson).then((response) => {
-        setPersons(
-          persons.map((person) => (person.id !== id ? person : response))
-        );
-        setNewName("");
-        setNewPhone("");
-        setMessage(`Updated ${response.name}`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-      });
+      personsService
+        .update(id, changedPerson)
+        .then((response) => {
+          setPersons(
+            persons.map((person) => (person.id !== id ? person : response))
+          );
+          setNewName("");
+          setNewPhone("");
+
+          setMessage(`Updated ${response.name}`);
+          setColour("green");
+        })
+        .catch((error) => {
+          setMessage(`${person.name} has been removed`);
+          setColour("red");
+
+          setPersons(persons.filter((person) => person.id !== id));
+        });
+
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     }
   };
 
@@ -102,7 +118,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} colour={colour} />
       <Filter filter={filter} handleFilter={handleFilter} />
 
       <h2>Add New</h2>
