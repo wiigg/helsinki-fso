@@ -1,4 +1,17 @@
+import { useState } from "react";
+
+import Country from "./Country";
+import Button from "./Button";
+
 const Countries = ({ countries, find }) => {
+  const [show, setShow] = useState({});
+
+  const handleShow = (country) => {
+    const newShow = { ...show };
+    newShow[country.name.common] = !newShow[country.name.common];
+    setShow(newShow);
+  };
+
   if (find === "") {
     return <div></div>;
   }
@@ -11,34 +24,22 @@ const Countries = ({ countries, find }) => {
     return (
       <div>
         {countries.map((country) => (
-          <div key={country.name.common}>{country.name.common}</div>
+          <div key={country.name.common}>
+            {country.name.common}{" "}
+            <Button
+              country={country}
+              show={show}
+              handleShow={handleShow}
+            />
+            <Country country={country} show={show} />
+          </div>
         ))}
       </div>
     );
   }
 
   if (countries.length === 1) {
-    const country = countries[0];
-
-    return (
-      <div>
-        <h1>{country.name.common}</h1>
-        <div>capital: {country.capital}</div>
-        <div>population: {country.population}</div>
-        <div>area: {country.area}</div>
-        <h2>languages</h2>
-        <ul>
-          {Object.values(country.languages).map((language) => (
-            <li key={language}>{language}</li>
-          ))}
-        </ul>
-        <img
-          src={country.flags.png}
-          alt={`flag of ${country.name.common}`}
-          width="100"
-        />
-      </div>
-    );
+    return <Country country={countries[0]} />;
   }
 };
 
