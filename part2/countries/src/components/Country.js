@@ -1,4 +1,7 @@
+import Weather from "./Weather";
+
 const Country = ({ country, show }) => {
+
   if (!show || show[country.name.common]) {
     return (
       <div>
@@ -6,7 +9,7 @@ const Country = ({ country, show }) => {
         <div>capital: {country.capital}</div>
         <div>population: {country.population}</div>
         <div>area: {country.area}</div>
-        <h2>languages</h2>
+        <h3>languages</h3>
         <ul>
           {Object.values(country.languages).map((language) => (
             <li key={language}>{language}</li>
@@ -17,6 +20,7 @@ const Country = ({ country, show }) => {
           alt={`flag of ${country.name.common}`}
           width="150"
         />
+        <Weather country={country} />
       </div>
     );
   }
