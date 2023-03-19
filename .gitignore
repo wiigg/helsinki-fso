@@ -10,6 +10,7 @@ coverage
 
 # production
 build
+backend.zip
 
 # misc
 .DS_Store
