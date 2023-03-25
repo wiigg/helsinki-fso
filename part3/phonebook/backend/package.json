@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../frontend && npm run build && cp -r build ../backend",
     "package": "zip -r backend.zip .",
-    "deploy:az": "npm run package && az webapp deployment source config-zip -g phonebook -n pbapp-fso --src backend.zip"
+    "deploy:az": "npm run package && az webapp deployment source config-zip -g phonebook -n pbapp-fso --src backend.zip",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,9 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.21"
   }
 }

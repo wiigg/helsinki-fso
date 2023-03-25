@@ -48,18 +48,28 @@ const App = () => {
       number: newPhone,
     };
 
-    personsService.create(personObject).then((response) => {
-      setPersons(persons.concat(response));
-      setNewName("");
-      setNewPhone("");
+    personsService
+      .create(personObject)
+      .then((response) => {
+        setPersons(persons.concat(response));
+        setNewName("");
+        setNewPhone("");
 
-      setMessage(`Added ${response.name}`);
-      setColour("green");
+        setMessage(`Added ${response.name}`);
+        setColour("green");
 
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
-    });
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      })
+      .catch((error) => {
+        setMessage(error.response.data.error);
+        setColour("red");
+
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      });
   };
 
   const deletePerson = (id) => {
@@ -68,9 +78,22 @@ const App = () => {
     const confirm = window.confirm(`Delete ${person.name}?`);
 
     if (confirm) {
-      personsService.remove(person.id).then((response) => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      personsService
+        .remove(person.id)
+        .then((response) => {
+          setPersons(persons.filter((person) => person.id !== id));
+
+          setMessage(`${person.name} was removed`);
+          setColour("green");
+        })
+        .catch((error) => {
+          setMessage(`${person.name} was unchanged`);
+          setColour("red");
+        });
+
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     }
   };
 
@@ -97,10 +120,8 @@ const App = () => {
           setColour("green");
         })
         .catch((error) => {
-          setMessage(`${person.name} has been removed`);
+          setMessage(`${person.name} was unchanged`);
           setColour("red");
-
-          setPersons(persons.filter((person) => person.id !== id));
         });
 
       setTimeout(() => {
