@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Jeremy Corbyn Set To Run Against Labour After Being Blocked By Keir Starmer",
+    "author": "Kevin Schofield",
+    "url": "https://www.huffingtonpost.co.uk/entry/jeremy-corbyn-set-to-run-against-labour-after-being-blocked-by-keir-starmer_uk_64232554e4b0ec7dfe48b3d3",
+    "likes": 11
+}

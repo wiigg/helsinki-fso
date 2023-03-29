@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-console */
 const mongoose = require('mongoose');
 
 const url = process.env.MONGODB_URI;
