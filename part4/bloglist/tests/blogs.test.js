@@ -1,12 +1,5 @@
 const listHelper = require("../utils/list_helper");
 
-test("dummy returns one", () => {
-  const blogs = [];
-
-  const result = listHelper.dummy(blogs);
-  expect(result).toBe(1);
-});
-
 const listWithManyBlogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -69,6 +62,13 @@ const listWithOneBlog = [
   },
 ];
 
+test("dummy returns one", () => {
+  const blogs = [];
+
+  const result = listHelper.dummy(blogs);
+  expect(result).toBe(1);
+});
+
 describe("total likes", () => {
   test("empty list", () => {
     expect(listHelper.totalLikes([])).toBe(0);
@@ -89,10 +89,50 @@ describe("favourite blog", () => {
   });
 
   test("one blog", () => {
-    expect(listHelper.favouriteBlog(listWithOneBlog)).toEqual(listWithOneBlog[0]);
+    expect(listHelper.favouriteBlog(listWithOneBlog)).toEqual(
+      listWithOneBlog[0]
+    );
   });
 
   test("bigger list", () => {
-    expect(listHelper.favouriteBlog(listWithManyBlogs)).toEqual(listWithManyBlogs[2]);
+    expect(listHelper.favouriteBlog(listWithManyBlogs)).toEqual(
+      listWithManyBlogs[2]
+    );
+  });
+});
+
+describe("most blogs", () => {
+  test("empty list", () => {
+    expect(listHelper.mostBlogs([])).toEqual({});
+  });
+
+  test("one blog", () => {
+    expect(listHelper.mostBlogs(listWithOneBlog).author).toBe(
+      "Edsger W. Dijkstra"
+    );
+  });
+
+  test("bigger list", () => {
+    expect(listHelper.mostBlogs(listWithManyBlogs).author).toBe(
+      "Robert C. Martin"
+    );
+  });
+});
+
+describe("most likes", () => {
+  test("empty list", () => {
+    expect(listHelper.mostLikes([])).toEqual({});
+  });
+
+  test("one blog", () => {
+    expect(listHelper.mostLikes(listWithOneBlog).author).toBe(
+      "Edsger W. Dijkstra"
+    );
+  });
+
+  test("bigger list", () => {
+    expect(listHelper.mostLikes(listWithManyBlogs).author).toBe(
+      "Edsger W. Dijkstra"
+    );
   });
 });
