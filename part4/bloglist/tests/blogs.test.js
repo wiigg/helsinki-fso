@@ -118,3 +118,21 @@ describe("most blogs", () => {
     );
   });
 });
+
+describe("most likes", () => {
+  test("empty list", () => {
+    expect(listHelper.mostLikes([])).toEqual({});
+  });
+
+  test("one blog", () => {
+    expect(listHelper.mostLikes(listWithOneBlog).author).toBe(
+      "Edsger W. Dijkstra"
+    );
+  });
+
+  test("bigger list", () => {
+    expect(listHelper.mostLikes(listWithManyBlogs).author).toBe(
+      "Edsger W. Dijkstra"
+    );
+  });
+});
