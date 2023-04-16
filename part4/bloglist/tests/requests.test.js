@@ -40,8 +40,61 @@ test("there are two blogs", async () => {
     .get("/api/blogs")
     .expect(200)
     .expect("Content-Type", /application\/json/);
-    
-    expect(response.body).toHaveLength(initialBlogs.length);
+
+  expect(response.body).toHaveLength(initialBlogs.length);
+});
+
+test("identifier property is named id", async () => {
+  const response = await api.get("/api/blogs");
+  expect(response.body[0].id).toBeDefined();
+});
+
+test("add a new blog", async () => {
+  const newBlog = {
+    title: "New blog",
+    author: "New author",
+    url: "https://newblog.com/",
+    likes: 10,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  const contents = response.body.map((blog) => blog.title);
+  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  expect(contents).toContain("New blog");
+});
+
+test("if likes property is missing, default to 0", async () => {
+  const newBlog = {
+    title: "New blog",
+    author: "New author",
+    url: "https://newblog.com/",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  // check every blog post has a likes field
+  response.body.forEach((blog) => {
+    expect(blog.likes).toBeDefined();
+  });
+});
+
+test("if title and url properties are missing, respond with 400 Bad Request", async () => {
+  const newBlog = {
+    author: "New author",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
 });
 
 afterAll(async () => {
