@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
-const helper = require("../utils/blogs_helper");
+const helper = require("../utils/blog_helper.js");
 const Blog = require("../models/blog");
 
 const api = supertest(app);
@@ -21,7 +21,7 @@ describe("blog verification", () => {
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    expect(response.body).toHaveLength(initialBlogs.length);
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
   });
 
   test("identifier property is named id", async () => {
@@ -47,7 +47,7 @@ describe("blog addition", () => {
 
     const response = await api.get("/api/blogs");
     const contents = response.body.map((blog) => blog.title);
-    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
     expect(contents).toContain("New blog");
   });
 
