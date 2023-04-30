@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpzYSIsImlkIjoiNjQ0OTg1MGMzNWQyMjcyZjdkMzkyZTRiIiwiaWF0IjoxNjgyNTQxMDU4fQ.HJ-9FBF6vS7mmq_2Q_SWQM5d_kJy6lc1tR7VksYD-TU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpzYSIsImlkIjoiNjQ0OTg1MGMzNWQyMjcyZjdkMzkyZTRiIiwiaWF0IjoxNjgyODUzMzg3fQ.khynKlZ062kwy5-hwNsRRgp2-_q3wzaRTA8W5RZxmBk
 
 {
     "title": "Parrots learn to make video calls to chat with other parrots",

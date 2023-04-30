@@ -29,7 +29,7 @@ usersRouter.post("/", async (request, response) => {
     });
   }
 
-  if (username.length < 3 || name.length < 3) {
+  if (username.length < 3 || password.length < 3) {
     return response.status(400).json({
       error: "username and password must both be at least 3 characters long",
     });

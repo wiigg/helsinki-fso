@@ -2,7 +2,7 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "jsa",
-    "name": "John Doe",
-    "password": "super_secret_password"
+    "username": "ash",
+    "name": "Ash Ketchum",
+    "password": "go-pikachu"
 }
