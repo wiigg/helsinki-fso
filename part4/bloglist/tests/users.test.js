@@ -9,11 +9,7 @@ const api = supertest(app);
 beforeEach(async () => {
   await User.deleteMany({});
 
-  const rootUser = {
-    username: "root",
-    name: "Superuser",
-    password: "super_secret",
-  };
+  const rootUser = helper.initialUsers[0];
 
   await api.post("/api/users").send(rootUser);
 });

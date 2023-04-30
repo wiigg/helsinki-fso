@@ -1,7 +1,5 @@
-const jwt = require("jsonwebtoken");
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
 
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
@@ -15,13 +13,7 @@ blogsRouter.post("/", async (request, response) => {
     return response.status(400).json({ error: "title or url missing" });
   }
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-
-  if (!decodedToken.id) {
-    response.status(401).json({ error: "invalid token" });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = request.user;
 
   const blog = new Blog({
     title,
@@ -46,13 +38,7 @@ blogsRouter.delete("/:id", async (request, response) => {
     return response.status(400).json({ error: "blog not found" });
   }
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-
-  if (!decodedToken.id) {
-    response.status(401).json({ error: "invalid token" });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = request.user;
 
   if (blog.user.toString() !== user.id) {
     return response.status(401).json({ error: "unauthorized user" });
