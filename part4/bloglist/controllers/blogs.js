@@ -9,7 +9,7 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
 
-  if (title === undefined || url === undefined) {
+  if (title === undefined || title === "" || url === undefined || url === "") {
     return response.status(400).json({ error: "title or url missing" });
   }
 
