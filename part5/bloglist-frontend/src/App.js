@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Create from "./components/Create";
 import Login from "./components/Login";
@@ -16,6 +16,8 @@ const App = () => {
 
   const [colour, setColour] = useState(null);
   const [message, setMessage] = useState(null);
+
+  const blogFormRef = useRef();
 
   const fetchBlogs = async () => {
     const blogs = await blogService.getAll();
@@ -75,6 +77,7 @@ const App = () => {
 
   const createBlog = async ({ title, author, url }) => {
     try {
+      blogFormRef.current.toggleVisibility();
       const result = await blogService.createOne({ title, author, url });
       result.user = user;
       setBlogs(blogs.concat(result));
@@ -135,7 +138,7 @@ const App = () => {
             <br />
           </div>
           <div>
-            <Toggleable buttonLabel="new blog">
+            <Toggleable buttonLabel="new blog" ref={blogFormRef}>
               <h2>add new</h2>
               <Create createBlog={createBlog} showBanner={showBanner} />
             </Toggleable>
