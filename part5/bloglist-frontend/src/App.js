@@ -4,6 +4,7 @@ import Create from "./components/Create";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import Notification from "./components/Notification";
+import Toggleable from "./components/Toggleable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -13,16 +14,13 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-
   const [colour, setColour] = useState(null);
   const [message, setMessage] = useState(null);
 
-  // useEffect(() => {
-  //   blogService.getAll().then((blogs) => setBlogs(blogs));
-  // }, []);
+  const fetchBlogs = async () => {
+    const blogs = await blogService.getAll();
+    setBlogs(blogs);
+  };
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("bloglistUser");
@@ -30,15 +28,10 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
       blogService.setToken(user.token);
+      // Only retrieve blogs for signed in users
       fetchBlogs();
     }
   }, []);
-
-  // Only retrieve blogs for signed in users
-  const fetchBlogs = async () => {
-    const blogs = await blogService.getAll();
-    setBlogs(blogs);
-  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -55,59 +48,70 @@ const App = () => {
       setUsername("");
       setPassword("");
 
-      setColour("green");
-      setMessage("successful login");
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      showBanner("green", "logged in");
     } catch (exception) {
-      setColour("red");
-      setMessage("wrong username or password");
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      showBanner("red", "wrong username or password");
     }
   };
 
   const handleLogout = () => {
-    setColour("blue");
-    setMessage("successful log out");
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
+    setUser(null);
     window.localStorage.removeItem("bloglistUser");
+    showBanner("blue", "successful log out");
   };
 
   const showBlogs = () =>
-    blogs.map((blog) => <Blog key={blog.id} blog={blog} />);
+    blogs
+      .map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          likeBlog={likeBlog}
+          removeBlog={removeBlog}
+          showBanner={showBanner}
+        />
+      ))
+      .sort((a, b) => b.props.blog.likes - a.props.blog.likes);
 
-  const handleCreate = async (event) => {
-    event.preventDefault();
-
+  const createBlog = async ({ title, author, url }) => {
     try {
-      // only create if user is logged in
-      if (user) {
-        await blogService.createOne({ title, author, url });
-
-        setColour("green");
-        setMessage(`${title} by ${author} added!`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-
-        setTitle("");
-        setAuthor("");
-        setUrl("");
-
-        fetchBlogs();
-      }
+      const result = await blogService.createOne({ title, author, url });
+      result.user = user;
+      setBlogs(blogs.concat(result));
+      return true;
     } catch (exception) {
-      setColour("red");
-      setMessage("could not add blog");
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      return false;
     }
+  };
+
+  const likeBlog = async (updatedBlog) => {
+    try {
+      await blogService.incrementLikes(updatedBlog);
+      setBlogs(
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      );
+      return true;
+    } catch (exception) {
+      return false;
+    }
+  };
+
+  const removeBlog = async (id) => {
+    try {
+      await blogService.removeOne(id);
+      setBlogs(blogs.filter((blog) => blog.id !== id));
+      return true;
+    } catch (exception) {
+      return false;
+    }
+  };
+
+  const showBanner = (colour, message) => {
+    setColour(colour);
+    setMessage(message);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   return (
@@ -131,16 +135,10 @@ const App = () => {
             <br />
           </div>
           <div>
-            <h2>add new</h2>
-            <Create
-              handleCreate={handleCreate}
-              title={title}
-              setTitle={setTitle}
-              author={author}
-              setAuthor={setAuthor}
-              url={url}
-              setUrl={setUrl}
-            />
+            <Toggleable buttonLabel="new blog">
+              <h2>add new</h2>
+              <Create createBlog={createBlog} showBanner={showBanner} />
+            </Toggleable>
             <br />
           </div>
           <div>{showBlogs()}</div>

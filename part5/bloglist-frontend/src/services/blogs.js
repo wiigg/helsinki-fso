@@ -19,7 +19,23 @@ const createOne = async (blog) => {
 
   const response = await axios.post(baseUrl, blog, config);
   return response.data;
-}
+};
+
+const incrementLikes = async (blog) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+};
+
+const removeOne = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  await axios.delete(`${baseUrl}/${id}`, config);
+};
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, createOne, setToken };
+export default { getAll, createOne, incrementLikes, removeOne, setToken };
