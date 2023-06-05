@@ -1,66 +1,66 @@
-import { useState, useEffect, useRef } from "react";
-import Blog from "./components/Blog";
-import Create from "./components/Create";
-import Login from "./components/Login";
-import Logout from "./components/Logout";
-import Notification from "./components/Notification";
-import Toggleable from "./components/Toggleable";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import { useState, useEffect, useRef } from 'react'
+import Blog from './components/Blog'
+import Create from './components/Create'
+import Login from './components/Login'
+import Logout from './components/Logout'
+import Notification from './components/Notification'
+import Toggleable from './components/Toggleable'
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
-  const [colour, setColour] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [colour, setColour] = useState(null)
+  const [message, setMessage] = useState(null)
 
-  const blogFormRef = useRef();
+  const blogFormRef = useRef()
 
   const fetchBlogs = async () => {
-    const blogs = await blogService.getAll();
-    setBlogs(blogs);
-  };
+    const blogs = await blogService.getAll()
+    setBlogs(blogs)
+  }
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("bloglistUser");
+    const loggedUserJSON = window.localStorage.getItem('bloglistUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
       // Only retrieve blogs for signed in users
-      fetchBlogs();
+      fetchBlogs()
     }
-  }, []);
+  }, [])
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
-      const user = await loginService.login({ username, password });
+      const user = await loginService.login({ username, password })
 
-      setUser(user);
-      window.localStorage.setItem("bloglistUser", JSON.stringify(user));
-      blogService.setToken(user.token);
+      setUser(user)
+      window.localStorage.setItem('bloglistUser', JSON.stringify(user))
+      blogService.setToken(user.token)
 
-      fetchBlogs();
+      fetchBlogs()
 
-      setUsername("");
-      setPassword("");
+      setUsername('')
+      setPassword('')
 
-      showBanner("green", "logged in");
+      showBanner('green', 'logged in')
     } catch (exception) {
-      showBanner("red", "wrong username or password");
+      showBanner('red', 'wrong username or password')
     }
-  };
+  }
 
   const handleLogout = () => {
-    setUser(null);
-    window.localStorage.removeItem("bloglistUser");
-    showBanner("blue", "successful log out");
-  };
+    setUser(null)
+    window.localStorage.removeItem('bloglistUser')
+    showBanner('blue', 'successful log out')
+  }
 
   const showBlogs = () =>
     blogs
@@ -73,49 +73,49 @@ const App = () => {
           showBanner={showBanner}
         />
       ))
-      .sort((a, b) => b.props.blog.likes - a.props.blog.likes);
+      .sort((a, b) => b.props.blog.likes - a.props.blog.likes)
 
   const createBlog = async ({ title, author, url }) => {
     try {
-      blogFormRef.current.toggleVisibility();
-      const result = await blogService.createOne({ title, author, url });
-      result.user = user;
-      setBlogs(blogs.concat(result));
-      return true;
+      const result = await blogService.createOne({ title, author, url })
+      result.user = user
+      setBlogs(blogs.concat(result))
+      blogFormRef.current.toggleVisibility()
+      return true
     } catch (exception) {
-      return false;
+      return false
     }
-  };
+  }
 
   const likeBlog = async (updatedBlog) => {
     try {
-      await blogService.incrementLikes(updatedBlog);
+      await blogService.incrementLikes(updatedBlog)
       setBlogs(
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
-      );
-      return true;
+      )
+      return true
     } catch (exception) {
-      return false;
+      return false
     }
-  };
+  }
 
   const removeBlog = async (id) => {
     try {
-      await blogService.removeOne(id);
-      setBlogs(blogs.filter((blog) => blog.id !== id));
-      return true;
+      await blogService.removeOne(id)
+      setBlogs(blogs.filter((blog) => blog.id !== id))
+      return true
     } catch (exception) {
-      return false;
+      return false
     }
-  };
+  }
 
   const showBanner = (colour, message) => {
-    setColour(colour);
-    setMessage(message);
+    setColour(colour)
+    setMessage(message)
     setTimeout(() => {
-      setMessage(null);
-    }, 5000);
-  };
+      setMessage(null)
+    }, 5000)
+  }
 
   return (
     <div>
@@ -148,7 +148,7 @@ const App = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

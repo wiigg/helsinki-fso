@@ -1,29 +1,28 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Create = ({ createBlog, showBanner }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   const handleCreate = async (event) => {
-    event.preventDefault();
-    const result = await createBlog({ title, author, url });
-    console.log(result)
+    event.preventDefault()
+    const result = await createBlog({ title, author, url })
     if (result) {
-      setTitle("");
-      setAuthor("");
-      setUrl("");
+      setTitle('')
+      setAuthor('')
+      setUrl('')
 
-      showBanner("green", `${title} by ${author} added!`);
+      showBanner('green', `${title} by ${author} added!`)
     } else {
-      showBanner("red", "could not add blog");
+      showBanner('red', 'could not add blog')
     }
-  };
+  }
 
   return (
     <form onSubmit={handleCreate}>
       <div>
-        title{" "}
+        title{' '}
         <input
           type="text"
           value={title}
@@ -32,7 +31,7 @@ const Create = ({ createBlog, showBanner }) => {
         />
       </div>
       <div>
-        author{" "}
+        author{' '}
         <input
           type="text"
           value={author}
@@ -41,7 +40,7 @@ const Create = ({ createBlog, showBanner }) => {
         />
       </div>
       <div>
-        url{" "}
+        url{' '}
         <input
           type="text"
           value={url}
@@ -51,7 +50,7 @@ const Create = ({ createBlog, showBanner }) => {
       </div>
       <button type="submit">create</button>
     </form>
-  );
-};
+  )
+}
 
-export default Create;
+export default Create

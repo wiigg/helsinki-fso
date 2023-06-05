@@ -1,55 +1,55 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
 const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
-  const [view, setView] = useState(false);
-  const [viewMessage, setViewMessage] = useState("view");
+  const [view, setView] = useState(false)
+  const [viewMessage, setViewMessage] = useState('view')
 
   const blogStyle = {
     padding: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
-  const visible = { display: view ? "" : "none" };
+  const visible = { display: view ? '' : 'none' }
 
   const showView = () => {
-    setView(!view);
-    setViewMessage(view ? "view" : "hide");
-  };
+    setView(!view)
+    setViewMessage(view ? 'view' : 'hide')
+  }
 
   const handleLike = async () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    const result = await likeBlog(updatedBlog);
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    const result = await likeBlog(updatedBlog)
     if (result) {
-      showBanner("green", `liked ${blog.title} by ${blog.author}`);
+      showBanner('green', `liked ${blog.title} by ${blog.author}`)
     } else {
-      showBanner("red", "could not like blog");
+      showBanner('red', 'could not like blog')
     }
-  };
+  }
 
   const handleRemove = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      const result = await removeBlog(blog.id);
+      const result = await removeBlog(blog.id)
       if (result) {
-        showBanner("green", `removed ${blog.title} by ${blog.author}`);
+        showBanner('green', `removed ${blog.title} by ${blog.author}`)
       } else {
-        showBanner("red", "could not remove blog");
+        showBanner('red', 'could not remove blog')
       }
     }
-  };
+  }
 
   const showRemove = {
     display:
-      blog.user.username === JSON.parse(window.localStorage.getItem("bloglistUser")).username
-        ? ""
-        : "none",
-  };
+      blog.user.username === JSON.parse(window.localStorage.getItem('bloglistUser')).username
+        ? ''
+        : 'none',
+  }
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author}{" "}
+      {blog.title} {blog.author}{' '}
       <button onClick={showView}>{viewMessage}</button>
       <div style={visible}>
         <div>{blog.url}</div>
@@ -62,7 +62,7 @@ const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
