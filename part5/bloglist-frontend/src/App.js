@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import Create from './components/BlogForm'
+import BlogForm from './components/BlogForm'
 import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
@@ -140,7 +140,7 @@ const App = () => {
           <div>
             <Toggleable buttonLabel="new blog" ref={blogFormRef}>
               <h2>add new</h2>
-              <Create createBlog={createBlog} showBanner={showBanner} />
+              <BlogForm createBlog={createBlog} showBanner={showBanner} />
             </Toggleable>
             <br />
           </div>

@@ -9,6 +9,7 @@ const Login = ({
     <div>
       username{' '}
       <input
+        id="username"
         type="text"
         value={username}
         name="username"
@@ -18,13 +19,14 @@ const Login = ({
     <div>
       password{' '}
       <input
+        id="password"
         type="password"
         value={password}
         name="password"
         onChange={({ target }) => setPassword(target.value)}
       />
     </div>
-    <button type="submit">login</button>
+    <button id="loginButton" type="submit">login</button>
   </form>
 )
 
