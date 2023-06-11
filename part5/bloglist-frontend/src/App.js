@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import Create from './components/Create'
+import Create from './components/BlogForm'
 import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'

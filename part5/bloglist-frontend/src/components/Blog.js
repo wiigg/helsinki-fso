@@ -50,11 +50,11 @@ const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
   return (
     <div id='blog' style={blogStyle}>
       {blog.title} {blog.author}{' '}
-      <button onClick={showView}>{viewMessage}</button>
+      <button id='viewButton' onClick={showView}>{viewMessage}</button>
       <div style={visible}>
         <div id='url'>{blog.url}</div>
         <div id='likes'>
-          likes {blog.likes} <button onClick={handleLike}>like</button>
+          likes {blog.likes} <button id='likeButton' onClick={handleLike}>like</button>
         </div>
         <div>{blog.user.name}</div>
         <div style={showRemove}>
