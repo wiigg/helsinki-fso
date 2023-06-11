@@ -55,65 +55,89 @@ describe('blog list', () => {
       cy.contains('Test Blog Test Author')
     })
 
-    it('a blog can be liked', () => {
-      cy.contains('new blog').click()
+    describe('and a blog exists', () => {
+      beforeEach(() => {
+        cy.createBlog({
+          title: 'Test Blog',
+          author: 'Test Author',
+          url: 'https://testurl.com',
+        })
+      })
 
-      cy.get('#titleInput').type('Test Blog')
-      cy.get('#authorInput').type('Test Author')
-      cy.get('#urlInput').type('https://testurl.com')
-      cy.get('#submitButton').click()
+      it('a blog can be liked', () => {
+        cy.contains('view').click()
+        cy.contains('like').click()
+        cy.contains('likes 1')
+      })
 
-      cy.contains('Test Blog Test Author')
-      cy.contains('view').click()
-      cy.contains('like').click()
-      cy.contains('likes 1')
+      it('a blog can be deleted by the user who created it', () => {
+        cy.contains('view').click()
+        cy.contains('remove').click()
+        cy.get('html').should('not.contain', 'Test Blog Test Author')
+      })
+
+      it('only a blog created by a user can remove it', () => {
+        // check that the creator can remove the blog
+        cy.contains('view').click()
+        cy.get('#removeButton').should('be.visible')
+
+        // create a second user
+        const user = {
+          name: 'Test User 2',
+          username: 'testuser2',
+          password: 'testpassword2',
+        }
+        cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+
+        // log in as the second user
+        cy.login({ username: 'testuser2', password: 'testpassword2' })
+
+        // try to delete the blog created by the first user
+        cy.contains('view').click()
+        cy.get('#removeButton').should('not.be.visible')
+      })
     })
 
-    it('a blog can be deleted by the user who created it', () => {
-      cy.contains('new blog').click()
+    describe('and several blogs exist', () => {
+      beforeEach(() => {
+        cy.createBlog({
+          title: 'First blog',
+          author: 'Test Author 1',
+          url: 'https://testurl1.com',
+        })
+        cy.createBlog({
+          title: 'Second blog',
+          author: 'Test Author 2',
+          url: 'https://testurl2.com',
+        })
+        cy.createBlog({
+          title: 'Third blog',
+          author: 'Test Author 3',
+          url: 'https://testurl3.com',
+        })
+      })
 
-      cy.get('#titleInput').type('Test Blog')
-      cy.get('#authorInput').type('Test Author')
-      cy.get('#urlInput').type('https://testurl.com')
-      cy.get('#submitButton').click()
+      it.only('blogs are ordered by number of likes', () => {
+        cy.get('.blog').eq(0).as('firstBlog')
+        cy.get('@firstBlog').within(() => {
+          cy.get('#viewButton').click()
+          cy.get('#likeButton').click()
+          cy.get('#likeButton').click()
+        })
 
-      cy.contains('Test Blog Test Author')
-      cy.contains('view').click()
-      cy.contains('remove').click()
-      cy.get('html').should('not.contain', 'Test Blog Test Author')
-    })
+        cy.get('.blog').eq(1).as('secondBlog')
+        cy.get('@secondBlog').within(() => {
+          cy.get('#viewButton').click()
+          cy.get('#likeButton').click()
+        })
 
-    it('a blog cannot be deleted by a user who did not create it', () => {
-      // create a second user
-      const user = {
-        name: 'Test User 2',
-        username: 'testuser2',
-        password: 'testpassword2',
-      }
-      cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
-
-      // log in as the second user
-      cy.login({ username: 'testuser2', password: 'testpassword2' })
-
-      // create a blog as the first user
-      cy.contains('new blog').click()
-      cy.get('#titleInput').type('Test Blog')
-      cy.get('#authorInput').type('Test Author')
-      cy.get('#urlInput').type('https://testurl.com')
-      cy.get('#submitButton').click()
-
-      cy.contains('Test Blog Test Author')
-
-      // log out
-      cy.contains('logout').click()
-
-      // log back in as the first user
-      cy.login({ username: 'testuser', password: 'testpassword' })
-
-      // try to delete the blog as the first user
-      cy.contains('Test Blog Test Author')
-      cy.contains('view').click()
-      cy.get('#removeButton').should('not.be.visible')
+        // check the order of the blogs
+        cy.get('.blog').then((blogs) => {
+          cy.wrap(blogs[0]).should('contain', 'First blog')
+          cy.wrap(blogs[1]).should('contain', 'Second blog')
+          cy.wrap(blogs[2]).should('contain', 'Third blog')
+        })
+      })
     })
   })
 })

@@ -48,7 +48,7 @@ const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
   }
 
   return (
-    <div id='blog' style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {blog.title} {blog.author}{' '}
       <button id='viewButton' onClick={showView}>{viewMessage}</button>
       <div style={visible}>
