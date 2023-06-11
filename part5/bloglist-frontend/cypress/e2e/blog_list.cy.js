@@ -118,25 +118,42 @@ describe('blog list', () => {
       })
 
       it.only('blogs are ordered by number of likes', () => {
-        cy.get('.blog').eq(0).as('firstBlog')
-        cy.get('@firstBlog').within(() => {
+        cy.contains('First blog').as('firstBlog')
+        cy.contains('Second blog').as('secondBlog')
+        cy.contains('Third blog').as('thirdBlog')
+
+        cy.contains('First blog').within(() => {
           cy.get('#viewButton').click()
-          cy.get('#likeButton').click()
-          cy.get('#likeButton').click()
+          cy.get('#likeButton').click() // First like
+        })
+        cy.wait(1000)
+
+        cy.contains('Second blog').within(() => {
+          cy.get('#viewButton').click()
+          cy.get('#likeButton').click() // First like
+        })
+        cy.wait(1000)
+        cy.contains('Second blog').within(() => {
+          cy.get('#likeButton').click() // First like
+        })
+        cy.wait(1000)
+        cy.contains('Second blog').within(() => {
+          cy.get('#likeButton').click() // First like
+        })
+        cy.wait(1000)
+
+        cy.contains('Third blog').within(() => {
+          cy.get('#viewButton').click()
+          cy.get('#likeButton').click() // First like
+        })
+        cy.wait(1000)
+        cy.contains('Third blog').within(() => {
+          cy.get('#likeButton').click() // First like
         })
 
-        cy.get('.blog').eq(1).as('secondBlog')
-        cy.get('@secondBlog').within(() => {
-          cy.get('#viewButton').click()
-          cy.get('#likeButton').click()
-        })
-
-        // check the order of the blogs
-        cy.get('.blog').then((blogs) => {
-          cy.wrap(blogs[0]).should('contain', 'First blog')
-          cy.wrap(blogs[1]).should('contain', 'Second blog')
-          cy.wrap(blogs[2]).should('contain', 'Third blog')
-        })
+        cy.get('.blog').eq(0).should('contain', 'Second blog')
+        cy.get('.blog').eq(1).should('contain', 'Third blog')
+        cy.get('.blog').eq(2).should('contain', 'First blog')
       })
     })
   })
