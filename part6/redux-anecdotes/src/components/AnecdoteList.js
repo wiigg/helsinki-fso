@@ -3,13 +3,14 @@ import { voteAnecdote } from "../reducers/anecdoteReducer";
 
 const AnecdoteList = () => {
   const dispatch = useDispatch();
-  const anecdotes = useSelector((state) => {
-    if (state.filter !== "") {
-      return state.anecdotes.filter((anecdote) =>
-        anecdote.content.toLowerCase().includes(state.filter.toLowerCase())
-      );
+  const anecdotes = useSelector(({ filter, anecdotes }) => {
+    if (filter === "") {
+      return [...anecdotes].sort((a, b) => b.votes - a.votes);
     }
-    return state.anecdotes;
+    const filtered = anecdotes.filter((anecdote) =>
+      anecdote.content.toLowerCase().includes(filter.toLowerCase())
+    );
+    return [...filtered].sort((a, b) => b.votes - a.votes);
   });
 
   const vote = (id) => {
@@ -19,17 +20,15 @@ const AnecdoteList = () => {
 
   return (
     <div>
-      {anecdotes
-        .sort((a, b) => b.votes - a.votes)
-        .map((anecdote) => (
-          <div key={anecdote.id}>
-            <div>{anecdote.content}</div>
-            <div>
-              has {anecdote.votes}
-              <button onClick={() => vote(anecdote.id)}>vote</button>
-            </div>
+      {anecdotes.map((anecdote) => (
+        <div key={anecdote.id}>
+          <div>{anecdote.content}</div>
+          <div>
+            has {anecdote.votes}
+            <button onClick={() => vote(anecdote.id)}>vote</button>
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 };
