@@ -13,6 +13,14 @@ const createNew = async (content) => {
   return response.data;
 };
 
-const endpoints = { getAll, createNew };
+const updateVote = async (id) => {
+  const response = await axios.get(`${baseUrl}/${id}`);
+  const anecdote = response.data;
+  const updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
+  const updateResponse = await axios.put(`${baseUrl}/${id}`, updatedAnecdote);
+  return updateResponse.data;
+};
+
+const endpoints = { getAll, createNew, updateVote };
 
 export default endpoints;
