@@ -6,6 +6,8 @@ const notificationReducer = (state, action) => {
       return action.payload;
     case "CLEAR_NOTIFICATION":
       return null;
+    case "SET_ERROR":
+      return action.payload;
     default:
       return state;
   }
@@ -14,7 +16,7 @@ const notificationReducer = (state, action) => {
 const NotificationContext = createContext();
 
 export const useNotificationValue = () => {
-  const [notification,] = useContext(NotificationContext);
+  const [notification] = useContext(NotificationContext);
   return notification;
 };
 
