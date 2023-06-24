@@ -10,10 +10,17 @@ const AnecdoteForm = () => {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData("anecdotes");
       queryClient.setQueryData("anecdotes", [...anecdotes, newAnecdote]);
+      notificationDispatch({
+        type: "SET_NOTIFICATION",
+        payload: `you created '${newAnecdote.content}'`,
+      });
+      setTimeout(() => {
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
+      }, 5000);
     },
     onError: (error) => {
       notificationDispatch({
-        type: "SET_ERROR",
+        type: "SET_NOTIFICATION",
         payload: error.response.data.error,
       });
       setTimeout(() => {
@@ -27,14 +34,6 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
     createAnecdoteMutation.mutate(content);
-
-    notificationDispatch({
-      type: "SET_NOTIFICATION",
-      payload: `you created '${content}'`,
-    });
-    setTimeout(() => {
-      notificationDispatch({ type: "CLEAR_NOTIFICATION" });
-    }, 5000);
   };
 
   return (
