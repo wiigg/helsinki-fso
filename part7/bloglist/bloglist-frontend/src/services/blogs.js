@@ -21,12 +21,13 @@ const createOne = async (blog) => {
   return response.data;
 };
 
-const incrementLikes = async (blog) => {
+const incrementLike = async (blog) => {
   const config = {
     headers: { Authorization: token },
   };
 
-  await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+  const response = await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+  return response.data;
 };
 
 const removeOne = async (id) => {
@@ -34,7 +35,8 @@ const removeOne = async (id) => {
     headers: { Authorization: token },
   };
 
-  await axios.delete(`${baseUrl}/${id}`, config);
+  const response = await axios.delete(`${baseUrl}/${id}`, config);
+  return response;
 };
 
-export default { getAll, createOne, incrementLikes, removeOne, setToken };
+export default { getAll, createOne, incrementLike, removeOne, setToken };

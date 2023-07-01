@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Login from "./components/Login";
@@ -18,7 +18,8 @@ const App = () => {
 
   const blogFormRef = useRef();
   const notificationDispatch = useNotificationDispatch();
-  // const queryClient = useQueryClient();
+
+  const queryClient = useQueryClient();
 
   const getBlogs = useQuery("blogs", blogService.getAll, {
     enabled: !!user,
@@ -29,6 +30,27 @@ const App = () => {
       setBlogs((oldBlogs) => oldBlogs.concat({ ...createdBlog, user }));
       blogFormRef.current.toggleVisibility();
       showBanner("green", `a new blog ${createdBlog.title} added`);
+    },
+  });
+
+  const likeBlogMutation = useMutation(blogService.incrementLike, {
+    onSuccess: (updatedBlog) => {
+      const allBlogs = queryClient.getQueryData("blogs");
+      console.log(updatedBlog);
+      const updatedBlogs = allBlogs.map((blog) =>
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      );
+      queryClient.setQueryData("blogs", updatedBlogs);
+      showBanner("green", `you liked ${updatedBlog.title}`);
+    },
+  });
+
+  const removeBlogMutation = useMutation(blogService.removeOne, {
+    onSuccess: (_, removedBlog) => {
+      const allBlogs = queryClient.getQueryData("blogs");
+      const updatedBlogs = allBlogs.filter((blog) => blog.id !== removedBlog);
+      queryClient.setQueryData("blogs", updatedBlogs);
+      showBanner("green", `blog removed`);
     },
   });
 
@@ -81,41 +103,23 @@ const App = () => {
           blog={blog}
           likeBlog={likeBlog}
           removeBlog={removeBlog}
-          showBanner={showBanner}
         />
       ))
       .sort((a, b) => b.props.blog.likes - a.props.blog.likes);
 
-  const createBlog = async ({ title, author, url }) => {
+  const createBlog = ({ title, author, url }) => {
     createBlogMutation.mutate({ title, author, url });
-
-    // const result = await blogService.createOne({ title, author, url });
-    // result.user = user;
-    // setBlogs(blogs.concat(result));
-    // blogFormRef.current.toggleVisibility();
     return true;
   };
 
-  const likeBlog = async (updatedBlog) => {
-    try {
-      await blogService.incrementLikes(updatedBlog);
-      setBlogs(
-        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
-      );
-      return true;
-    } catch (exception) {
-      return false;
-    }
+  const likeBlog = (blog) => {
+    likeBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
+    return true;
   };
 
-  const removeBlog = async (id) => {
-    try {
-      await blogService.removeOne(id);
-      setBlogs(blogs.filter((blog) => blog.id !== id));
-      return true;
-    } catch (exception) {
-      return false;
-    }
+  const removeBlog = (id) => {
+    removeBlogMutation.mutate(id);
+    return true;
   };
 
   const showBanner = (colour, message) => {

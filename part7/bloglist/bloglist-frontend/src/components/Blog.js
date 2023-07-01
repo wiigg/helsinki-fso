@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
+const Blog = ({ blog, likeBlog, removeBlog }) => {
   const [view, setView] = useState(false);
   const [viewMessage, setViewMessage] = useState("view");
 
@@ -19,24 +19,13 @@ const Blog = ({ blog, likeBlog, removeBlog, showBanner }) => {
     setViewMessage(view ? "view" : "hide");
   };
 
-  const handleLike = async () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    const result = await likeBlog(updatedBlog);
-    if (result) {
-      showBanner("green", `liked ${blog.title} by ${blog.author}`);
-    } else {
-      showBanner("red", "could not like blog");
-    }
+  const handleLike = () => {
+    likeBlog(blog);
   };
 
-  const handleRemove = async () => {
+  const handleRemove = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      const result = await removeBlog(blog.id);
-      if (result) {
-        showBanner("green", `removed ${blog.title} by ${blog.author}`);
-      } else {
-        showBanner("red", "could not remove blog");
-      }
+      removeBlog(blog.id);
     }
   };
 
