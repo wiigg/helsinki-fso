@@ -4,6 +4,11 @@ const Blog = ({ blog, likeBlog, removeBlog }) => {
   const [view, setView] = useState(false);
   const [viewMessage, setViewMessage] = useState("view");
 
+  const loggedInUserJSON = window.localStorage.getItem("bloglistUser");
+  const username = loggedInUserJSON
+    ? JSON.parse(loggedInUserJSON).username
+    : null;
+
   const blogStyle = {
     padding: 10,
     paddingLeft: 2,
@@ -30,11 +35,7 @@ const Blog = ({ blog, likeBlog, removeBlog }) => {
   };
 
   const showRemove = {
-    display:
-      blog.user.username ===
-      JSON.parse(window.localStorage.getItem("bloglistUser")).username
-        ? ""
-        : "none",
+    display: blog.user.username === username ? "" : "none",
   };
 
   return (

@@ -9,15 +9,18 @@ import Toggleable from "./components/Toggleable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import { useNotificationDispatch } from "./contexts/NotificationContext";
+import { useUserDispatch, useUserValue } from "./contexts/UserContext";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const notificationDispatch = useNotificationDispatch();
+  const userDispatch = useUserDispatch();
+  const user = useUserValue();
 
   const blogFormRef = useRef();
-  const notificationDispatch = useNotificationDispatch();
 
   const queryClient = useQueryClient();
 
@@ -36,7 +39,6 @@ const App = () => {
   const likeBlogMutation = useMutation(blogService.incrementLike, {
     onSuccess: (updatedBlog) => {
       const allBlogs = queryClient.getQueryData("blogs");
-      console.log(updatedBlog);
       const updatedBlogs = allBlogs.map((blog) =>
         blog.id === updatedBlog.id ? updatedBlog : blog
       );
@@ -61,11 +63,11 @@ const App = () => {
   }, [getBlogs.data]);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("bloglistUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+    const loggedInUserJSON = window.localStorage.getItem("bloglistUser");
+    if (loggedInUserJSON) {
+      const currentUser = JSON.parse(loggedInUserJSON);
+      userDispatch({ type: "SET_USER", payload: currentUser });
+      blogService.setToken(currentUser.token);
     }
   }, []);
 
@@ -73,11 +75,11 @@ const App = () => {
     event.preventDefault();
 
     try {
-      const user = await loginService.login({ username, password });
+      const currentUser = await loginService.login({ username, password });
 
-      setUser(user);
-      window.localStorage.setItem("bloglistUser", JSON.stringify(user));
-      blogService.setToken(user.token);
+      userDispatch({ type: "SET_USER", payload: currentUser });
+      window.localStorage.setItem("bloglistUser", JSON.stringify(currentUser));
+      blogService.setToken(currentUser.token);
 
       setUsername("");
       setPassword("");
@@ -89,7 +91,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
+    userDispatch({ type: "CLEAR_USER" });
     window.localStorage.removeItem("bloglistUser");
     showBanner("blue", "successful log out");
   };
