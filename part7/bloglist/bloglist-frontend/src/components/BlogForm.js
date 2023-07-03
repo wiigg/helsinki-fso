@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Create = ({ createBlog, showBanner }) => {
+const Create = ({ createBlog }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -12,10 +12,6 @@ const Create = ({ createBlog, showBanner }) => {
       setTitle("");
       setAuthor("");
       setUrl("");
-
-      showBanner("green", `${title} by ${author} added!`);
-    } else {
-      showBanner("red", "could not add blog");
     }
   };
 
