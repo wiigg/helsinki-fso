@@ -1,62 +1,44 @@
-import React, { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
+import { Link } from "react-router-dom";
 
-const Blog = ({ blog, likeBlog, removeBlog }) => {
-  const [view, setView] = useState(false);
-  const [viewMessage, setViewMessage] = useState("view");
+import { useUserValue } from "../contexts/UserContext";
+import blogService from "../services/blogs";
 
-  const loggedInUserJSON = window.localStorage.getItem("bloglistUser");
-  const username = loggedInUserJSON
-    ? JSON.parse(loggedInUserJSON).username
-    : null;
+const Blog = ({ blog, showBanner }) => {
+  const loggedInUser = useUserValue();
 
-  const blogStyle = {
-    padding: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+  const queryClient = useQueryClient();
 
-  const visible = { display: view ? "" : "none" };
-
-  const showView = () => {
-    setView(!view);
-    setViewMessage(view ? "view" : "hide");
-  };
+  const likeBlogMutation = useMutation(blogService.incrementLike, {
+    onSuccess: (updatedBlog) => {
+      const allBlogs = queryClient.getQueryData("blogs");
+      const updatedBlogs = allBlogs.map((blog) =>
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      );
+      queryClient.setQueryData("blogs", updatedBlogs);
+      showBanner("green", `you liked ${updatedBlog.title}`);
+    },
+  });
 
   const handleLike = () => {
-    likeBlog(blog);
+    likeBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
   };
 
-  const handleRemove = () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      removeBlog(blog.id);
-    }
-  };
-
-  const showRemove = {
-    display: blog.user.username === username ? "" : "none",
-  };
+  if (!loggedInUser || !blog) return null;
 
   return (
-    <div className="blog" style={blogStyle}>
-      {blog.title} {blog.author}{" "}
-      <button id="viewButton" onClick={showView}>
-        {viewMessage}
-      </button>
-      <div style={visible}>
-        <div id="url">{blog.url}</div>
-        <div id="likes">
-          likes {blog.likes}{" "}
-          <button id="likeButton" onClick={handleLike}>
-            like
-          </button>
-        </div>
-        <div>{blog.user.name}</div>
-        <div id="removeButton" style={showRemove}>
-          <button onClick={handleRemove}>remove</button>
-        </div>
+    <div className="blog">
+      <h2>
+        {blog.title} {blog.author}
+      </h2>
+      <div id="url"><Link to={`${blog.url}`}>{blog.url}</Link></div>
+      <div id="likes">
+        {blog.likes} likes
+        <button id="likeButton" onClick={handleLike}>
+          like
+        </button>
       </div>
+      <div>added by {blog.user.name}</div>
     </div>
   );
 };

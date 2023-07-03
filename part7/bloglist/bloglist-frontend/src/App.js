@@ -8,6 +8,7 @@ import Notification from "./components/Notification";
 import Users from "./components/Users";
 import User from "./components/User";
 import Blogs from "./components/Blogs";
+import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -95,6 +96,11 @@ const App = () => {
     ? users.find((user) => user.id === userMatch.params.id)
     : null;
 
+  const blogMatch = useMatch("/blogs/:id");
+  const blogToShow = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null;
+
   return (
     <div>
       <h1>blogs</h1>
@@ -119,6 +125,10 @@ const App = () => {
       <Routes>
         <Route path="/users/:id" element={<User user={userToShow} />} />
         <Route path="/users" element={<Users users={users} />} />
+        <Route
+          path="/blogs/:id"
+          element={<Blog blog={blogToShow} showBanner={showBanner} />}
+        />
         <Route
           path="/"
           element={
