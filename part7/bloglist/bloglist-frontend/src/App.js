@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import { Routes, Route, useMatch } from "react-router-dom";
+import { Routes, Route, useMatch, Link, Navigate } from "react-router-dom";
 
 import Login from "./components/Login";
 import Logout from "./components/Logout";
@@ -11,16 +11,14 @@ import Blogs from "./components/Blogs";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
 import userService from "./services/users";
 import { useNotificationDispatch } from "./contexts/NotificationContext";
 import { useUserDispatch, useUserValue } from "./contexts/UserContext";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const notificationDispatch = useNotificationDispatch();
   const userDispatch = useUserDispatch();
@@ -28,12 +26,23 @@ const App = () => {
 
   const getBlogs = useQuery("blogs", blogService.getAll, {
     enabled: !!user,
+    retry: 1,
   });
 
   const getUsers = useQuery("users", userService.getAll, {
     enabled: !!user,
     retry: 1,
   });
+
+  useEffect(() => {
+    const loggedInUserJSON = window.localStorage.getItem("bloglistUser");
+    if (loggedInUserJSON) {
+      const currentUser = JSON.parse(loggedInUserJSON);
+      userDispatch({ type: "SET_USER", payload: currentUser });
+      blogService.setToken(currentUser.token);
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     if (getUsers.data) {
@@ -46,40 +55,6 @@ const App = () => {
       setBlogs(getBlogs.data);
     }
   }, [getBlogs.data]);
-
-  useEffect(() => {
-    const loggedInUserJSON = window.localStorage.getItem("bloglistUser");
-    if (loggedInUserJSON) {
-      const currentUser = JSON.parse(loggedInUserJSON);
-      userDispatch({ type: "SET_USER", payload: currentUser });
-      blogService.setToken(currentUser.token);
-    }
-  }, []);
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const currentUser = await loginService.login({ username, password });
-
-      userDispatch({ type: "SET_USER", payload: currentUser });
-      window.localStorage.setItem("bloglistUser", JSON.stringify(currentUser));
-      blogService.setToken(currentUser.token);
-
-      setUsername("");
-      setPassword("");
-
-      showBanner("blue", "successful log in");
-    } catch (exception) {
-      showBanner("red", "wrong username or password");
-    }
-  };
-
-  const handleLogout = () => {
-    userDispatch({ type: "CLEAR_USER" });
-    window.localStorage.removeItem("bloglistUser");
-    showBanner("blue", "successful log out");
-  };
 
   const showBanner = (colour, message) => {
     notificationDispatch({
@@ -101,45 +76,73 @@ const App = () => {
     ? blogs.find((blog) => blog.id === blogMatch.params.id)
     : null;
 
+  const navStyle = {
+    padding: 5,
+    marginRight: "0.25em",
+  };
+
+  if (loading) return <div>loading...</div>;
+
   return (
     <div>
-      <h1>blogs</h1>
-      <Notification />
-      {!user && (
-        <Login
-          handleLogin={handleLogin}
-          username={username}
-          setUsername={setUsername}
-          password={password}
-          setPassword={setPassword}
-        />
-      )}
-      {user && (
-        <div>
-          Welcome, <b>{user.name}</b>
-          <Logout handleLogout={handleLogout} />
-          <br />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.1em",
+          backgroundColor: "lightgrey",
+        }}
+      >
+        <Link style={navStyle} to="/">
+          blogs
+        </Link>
+        <Link style={navStyle} to="/users">
+          users
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.1em" }}>
+          {user ? (
+            <>
+              <em style={navStyle}>{user.name} logged in</em>
+              <Logout showBanner={showBanner} />
+            </>
+          ) : (
+            <Link style={navStyle} to="/login">
+              login
+            </Link>
+          )}
         </div>
-      )}
+      </div>
+      <h1>blog app</h1>
+      <Notification />
 
       <Routes>
         <Route path="/users/:id" element={<User user={userToShow} />} />
-        <Route path="/users" element={<Users users={users} />} />
+        <Route
+          path="/users"
+          element={
+            user ? <Users users={users} /> : <Navigate replace to="/login" />
+          }
+        />
         <Route
           path="/blogs/:id"
           element={<Blog blog={blogToShow} showBanner={showBanner} />}
         />
+        <Route path="/login" element={<Login showBanner={showBanner} />} />
         <Route
           path="/"
           element={
-            <>
-              <CreateBlog getBlogs={getBlogs} showBanner={showBanner} />
-              <Blogs
-                blogs={blogs}
-                getBlogs={getBlogs}
-                showBanner={showBanner}
-              />
-            </>
+            user ? (
+              <>
+                <CreateBlog getBlogs={getBlogs} showBanner={showBanner} />
+                <Blogs
+                  blogs={blogs}
+                  getBlogs={getBlogs}
+                  showBanner={showBanner}
+                />
+              </>
+            ) : (
+              <Navigate replace to="/login" />
+            )
           }
         />
       </Routes>
