@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from "react-query";
 import { Link } from "react-router-dom";
 
-import { useUserValue } from "../contexts/UserContext";
 import blogService from "../services/blogs";
 
 const Blog = ({ blog, showBanner }) => {
-  const loggedInUser = useUserValue();
-
   const queryClient = useQueryClient();
 
   const likeBlogMutation = useMutation(blogService.incrementLike, {
@@ -24,14 +21,16 @@ const Blog = ({ blog, showBanner }) => {
     likeBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
   };
 
-  if (!loggedInUser || !blog) return null;
+  if (!blog) return null;
 
   return (
     <div className="blog">
       <h2>
         {blog.title} {blog.author}
       </h2>
-      <div id="url"><Link to={`${blog.url}`}>{blog.url}</Link></div>
+      <div id="url">
+        <Link to={`${blog.url}`}>{blog.url}</Link>
+      </div>
       <div id="likes">
         {blog.likes} likes
         <button id="likeButton" onClick={handleLike}>
@@ -39,6 +38,12 @@ const Blog = ({ blog, showBanner }) => {
         </button>
       </div>
       <div>added by {blog.user.name}</div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment) => (
+          <li key={comment.id}>{comment.content}</li>
+        ))}
+      </ul>
     </div>
   );
 };

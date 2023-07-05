@@ -1,10 +1,6 @@
 import { Link } from "react-router-dom";
-import { useUserValue } from "../contexts/UserContext";
 
 const Blogs = ({ blogs }) => {
-  const loggedInUser = useUserValue();
-  if (!loggedInUser) return null;
-
   const blogStyle = {
     padding: 10,
     paddingLeft: 2,

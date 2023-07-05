@@ -1,10 +1,7 @@
-POST http://localhost:3003/api/blogs
+POST http://localhost:3003/api/blogs/64a5b12c1d56812600bd7c19/comments
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzaCIsImlkIjoiNjQ0ZTUzNmQzZDY4M2E2MDA1ZTFkYzMwIiwiaWF0IjoxNjg1MzkyNDczfQ.0xkzyw-q35E0BopRIixVbZKE3rlu4KqEllBQWH_0I6I
 
 {
-    "title": "A test blog",
-    "author": "Some guy",
-    "url": "https://www.google.com",
-    "likes": 2
+  "content": "This is a comment"
 }

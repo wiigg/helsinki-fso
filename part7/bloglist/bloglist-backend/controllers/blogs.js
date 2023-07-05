@@ -1,15 +1,18 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
+const Comment = require("../models/comment");
 
 blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
+  const blogs = await Blog.find({})
+    .populate("user", { username: 1, name: 1 })
+    .populate("comments", { content: 1 });
   response.json(blogs);
 });
 
 blogsRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
 
-  if (title === undefined || title === "" || url === undefined || url === "") {
+  if (title === undefined || url === undefined) {
     return response.status(400).json({ error: "title or url missing" });
   }
 
@@ -24,6 +27,7 @@ blogsRouter.post("/", async (request, response) => {
   });
 
   const savedBlog = await blog.save();
+
   user.blogs = user.blogs.concat(savedBlog.id);
   await user.save();
 
@@ -61,6 +65,32 @@ blogsRouter.put("/:id", async (request, response) => {
   ).populate("user", { name: 1 });
 
   response.status(200).json(updatedBlog).end();
+});
+
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const { content } = request.body;
+
+  if (content === undefined) {
+    return response.status(400).json({ error: "content missing" });
+  }
+
+  const blog = await Blog.findById(request.params.id);
+
+  if (blog === null) {
+    return response.status(400).json({ error: "blog not found" });
+  }
+
+  const comment = new Comment({
+    content,
+    blog: blog.id,
+  });
+
+  const savedComment = await comment.save();
+
+  blog.comments = blog.comments.concat(savedComment.id);
+  await blog.save();
+
+  response.status(201).json(savedComment).end();
 });
 
 module.exports = blogsRouter;
