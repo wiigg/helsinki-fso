@@ -12,7 +12,6 @@ import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import blogService from "./services/blogs";
 import userService from "./services/users";
-import { useNotificationDispatch } from "./contexts/NotificationContext";
 import { useUserDispatch, useUserValue } from "./contexts/UserContext";
 
 const App = () => {
@@ -20,7 +19,6 @@ const App = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const notificationDispatch = useNotificationDispatch();
   const userDispatch = useUserDispatch();
   const user = useUserValue();
 
@@ -55,16 +53,6 @@ const App = () => {
       setBlogs(getBlogs.data);
     }
   }, [getBlogs.data]);
-
-  const showBanner = (colour, message) => {
-    notificationDispatch({
-      type: "SET_NOTIFICATION",
-      payload: { colour, message },
-    });
-    setTimeout(() => {
-      notificationDispatch({ type: "HIDE_NOTIFICATION" });
-    }, 5000);
-  };
 
   const userMatch = useMatch("/users/:id");
   const userToShow = userMatch
@@ -103,7 +91,7 @@ const App = () => {
           {user ? (
             <>
               <em style={navStyle}>{user.name} logged in</em>
-              <Logout showBanner={showBanner} />
+              <Logout />
             </>
           ) : (
             <Link style={navStyle} to="/login">
@@ -116,7 +104,12 @@ const App = () => {
       <Notification />
 
       <Routes>
-        <Route path="/users/:id" element={<User user={userToShow} />} />
+        <Route
+          path="/users/:id"
+          element={
+            user ? <User user={userToShow} /> : <Navigate replace to="/login" />
+          }
+        />
         <Route
           path="/users"
           element={
@@ -125,20 +118,18 @@ const App = () => {
         />
         <Route
           path="/blogs/:id"
-          element={<Blog blog={blogToShow} showBanner={showBanner} />}
+          element={
+            user ? <Blog blog={blogToShow} /> : <Navigate replace to="/login" />
+          }
         />
-        <Route path="/login" element={<Login showBanner={showBanner} />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={
             user ? (
               <>
-                <CreateBlog getBlogs={getBlogs} showBanner={showBanner} />
-                <Blogs
-                  blogs={blogs}
-                  getBlogs={getBlogs}
-                  showBanner={showBanner}
-                />
+                <CreateBlog setBlogs={setBlogs} />
+                <Blogs blogs={blogs} getBlogs={getBlogs} />
               </>
             ) : (
               <Navigate replace to="/login" />

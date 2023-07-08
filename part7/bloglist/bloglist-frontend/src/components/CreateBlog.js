@@ -2,13 +2,16 @@ import { useMutation } from "react-query";
 import { useRef } from "react";
 
 import { useUserValue } from "../contexts/UserContext";
+import { useAutoDismissNotification } from "../contexts/NotificationContext";
 import blogService from "../services/blogs";
 import BlogForm from "./BlogForm";
 import Toggleable from "./Toggleable";
 
-const CreateBlog = ({ setBlogs, showBanner }) => {
+const CreateBlog = ({ setBlogs }) => {
   const loggedInUser = useUserValue();
   const blogFormRef = useRef();
+
+  const notify = useAutoDismissNotification();
 
   const createBlog = ({ title, author, url }) => {
     createBlogMutation.mutate({ title, author, url });
@@ -18,10 +21,10 @@ const CreateBlog = ({ setBlogs, showBanner }) => {
     onSuccess: (createdBlog) => {
       setBlogs((oldBlogs) => oldBlogs.concat({ ...createdBlog, loggedInUser }));
       blogFormRef.current.toggleVisibility();
-      showBanner("green", `a new blog ${createdBlog.title} added`);
+      notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`, "green");
     },
     onError: () => {
-      showBanner("red", "error creating blog");
+      notify("error: could not create blog", "red");
     },
   });
 

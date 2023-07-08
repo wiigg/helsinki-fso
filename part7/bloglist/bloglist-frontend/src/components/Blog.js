@@ -2,9 +2,12 @@ import { useMutation, useQueryClient } from "react-query";
 import { Link } from "react-router-dom";
 
 import blogService from "../services/blogs";
+import { useAutoDismissNotification } from "../contexts/NotificationContext";
+import Comments from "./Comments";
 
-const Blog = ({ blog, showBanner }) => {
+const Blog = ({ blog }) => {
   const queryClient = useQueryClient();
+  const notify = useAutoDismissNotification();
 
   const likeBlogMutation = useMutation(blogService.incrementLike, {
     onSuccess: (updatedBlog) => {
@@ -13,7 +16,7 @@ const Blog = ({ blog, showBanner }) => {
         blog.id === updatedBlog.id ? updatedBlog : blog
       );
       queryClient.setQueryData("blogs", updatedBlogs);
-      showBanner("green", `you liked ${updatedBlog.title}`);
+      notify(`you liked ${updatedBlog.title}`, "green")
     },
   });
 
@@ -38,12 +41,7 @@ const Blog = ({ blog, showBanner }) => {
         </button>
       </div>
       <div>added by {blog.user.name}</div>
-      <h3>comments</h3>
-      <ul>
-        {blog.comments.map((comment) => (
-          <li key={comment.id}>{comment.content}</li>
-        ))}
-      </ul>
+      <Comments blog={blog} />
     </div>
   );
 };

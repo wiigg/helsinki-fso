@@ -1,11 +1,13 @@
 import { useUserDispatch } from "../contexts/UserContext";
+import { useAutoDismissNotification } from "../contexts/NotificationContext";
 
-const Logout = ({ showBanner }) => {
+const Logout = () => {
   const userDispatch = useUserDispatch();
+  const notify = useAutoDismissNotification();
   const handleLogout = () => {
     userDispatch({ type: "CLEAR_USER" });
     window.localStorage.removeItem("bloglistUser");
-    showBanner("blue", "successful log out");
+    notify("successful log out", "blue");
   };
 
   return (

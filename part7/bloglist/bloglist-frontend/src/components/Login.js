@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserDispatch } from "../contexts/UserContext";
+import { useAutoDismissNotification } from "../contexts/NotificationContext";
 import loginService from "../services/login";
 import blogService from "../services/blogs";
 
-const Login = ({ showBanner }) => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
   const userDispatch = useUserDispatch();
+  const notify = useAutoDismissNotification();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -25,10 +27,10 @@ const Login = ({ showBanner }) => {
       setUsername("");
       setPassword("");
 
-      showBanner("blue", "successful log in");
+      notify("successful login", "blue");
       navigate("/");
     } catch (exception) {
-      showBanner("red", "wrong username or password");
+      notify("wrong username or password", "red");
     }
   };
 

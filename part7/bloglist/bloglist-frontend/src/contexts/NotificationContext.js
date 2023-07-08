@@ -17,15 +17,27 @@ export const useNotificationValue = () => {
   return useContext(NotificationContext)[0];
 };
 
-export const useNotificationDispatch = () => {
+const useNotificationDispatch = () => {
   return useContext(NotificationContext)[1];
 };
 
+export const useAutoDismissNotification = () => {
+  const dispatch = useNotificationDispatch();
+
+  return (message, colour) => {
+    dispatch({ type: "SET_NOTIFICATION", payload: { message, colour } });
+
+    setTimeout(() => {
+      dispatch({ type: "HIDE_NOTIFICATION" });
+    }, 5000);
+  };
+};
+
 export const NotificationContextProvider = ({ children }) => {
-  const [notification, notificationDispatch] = useReducer(
-    notificationReducer,
-    null
-  );
+  const [notification, notificationDispatch] = useReducer(notificationReducer, {
+    message: null,
+    colour: null,
+  });
 
   return (
     <NotificationContext.Provider value={[notification, notificationDispatch]}>

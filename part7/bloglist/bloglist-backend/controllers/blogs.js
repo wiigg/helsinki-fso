@@ -12,7 +12,7 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
 
-  if (title === undefined || url === undefined) {
+  if (!title || !url) {
     return response.status(400).json({ error: "title or url missing" });
   }
 
@@ -70,7 +70,7 @@ blogsRouter.put("/:id", async (request, response) => {
 blogsRouter.post("/:id/comments", async (request, response) => {
   const { content } = request.body;
 
-  if (content === undefined) {
+  if (!content) {
     return response.status(400).json({ error: "content missing" });
   }
 
