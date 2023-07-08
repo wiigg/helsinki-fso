@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import { Routes, Route, useMatch, Link, Navigate } from "react-router-dom";
+import { Routes, Route, useMatch, Navigate } from "react-router-dom";
 
 import Login from "./components/Login";
 import Logout from "./components/Logout";
@@ -10,6 +10,7 @@ import User from "./components/User";
 import Blogs from "./components/Blogs";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
+import NavLink from "./components/NavLink";
 import blogService from "./services/blogs";
 import userService from "./services/users";
 import { useUserDispatch, useUserValue } from "./contexts/UserContext";
@@ -64,79 +65,75 @@ const App = () => {
     ? blogs.find((blog) => blog.id === blogMatch.params.id)
     : null;
 
-  const navStyle = {
-    padding: 5,
-    marginRight: "0.25em",
-  };
-
   if (loading) return <div>loading...</div>;
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.1em",
-          backgroundColor: "lightgrey",
-        }}
-      >
-        <Link style={navStyle} to="/">
-          blogs
-        </Link>
-        <Link style={navStyle} to="/users">
-          users
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.1em" }}>
-          {user ? (
-            <>
-              <em style={navStyle}>{user.name} logged in</em>
-              <Logout />
-            </>
-          ) : (
-            <Link style={navStyle} to="/login">
-              login
-            </Link>
-          )}
-        </div>
-      </div>
-      <h1>blog app</h1>
-      <Notification />
+      <div className="flex items-center justify-between bg-gray-800 px-6 py-4">
+        <h1 className="text-2xl font-semibold text-white">Blog App</h1>
 
-      <Routes>
-        <Route
-          path="/users/:id"
-          element={
-            user ? <User user={userToShow} /> : <Navigate replace to="/login" />
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            user ? <Users users={users} /> : <Navigate replace to="/login" />
-          }
-        />
-        <Route
-          path="/blogs/:id"
-          element={
-            user ? <Blog blog={blogToShow} /> : <Navigate replace to="/login" />
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            user ? (
+        <div className="flex items-center space-x-4">
+          <NavLink to="/">blogs</NavLink>
+          <NavLink to="/users">users</NavLink>
+          <div className="flex items-center gap-1">
+            {user ? (
               <>
-                <CreateBlog setBlogs={setBlogs} />
-                <Blogs blogs={blogs} getBlogs={getBlogs} />
+                <span className="text-gray-300">{user.name}</span>
+                <Logout />
               </>
             ) : (
-              <Navigate replace to="/login" />
-            )
-          }
-        />
-      </Routes>
+              <NavLink to="/login">login</NavLink>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto my-4 max-w-5xl">
+        <Notification />
+
+        <Routes>
+          <Route
+            path="/users/:id"
+            element={
+              user ? (
+                <User user={userToShow} />
+              ) : (
+                <Navigate replace to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              user ? <Users users={users} /> : <Navigate replace to="/login" />
+            }
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              user ? (
+                <Blog blog={blogToShow} />
+              ) : (
+                <Navigate replace to="/login" />
+              )
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              user ? (
+                <>
+                  <CreateBlog setBlogs={setBlogs} />
+                  <Blogs blogs={blogs} getBlogs={getBlogs} />
+                </>
+              ) : (
+                <Navigate replace to="/login" />
+              )
+            }
+          />
+        </Routes>
+      </div>
     </div>
   );
 };

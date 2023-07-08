@@ -21,10 +21,13 @@ const CreateBlog = ({ setBlogs }) => {
     onSuccess: (createdBlog) => {
       setBlogs((oldBlogs) => oldBlogs.concat({ ...createdBlog, loggedInUser }));
       blogFormRef.current.toggleVisibility();
-      notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`, "green");
+      notify(
+        `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+        "success"
+      );
     },
     onError: () => {
-      notify("error: could not create blog", "red");
+      notify("could not create blog", "error");
     },
   });
 
@@ -33,7 +36,7 @@ const CreateBlog = ({ setBlogs }) => {
   return (
     <div>
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-        <h2>add new</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Add new</h2>
         <BlogForm createBlog={createBlog} />
       </Toggleable>
       <br />

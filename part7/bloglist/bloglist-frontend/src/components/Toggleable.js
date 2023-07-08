@@ -18,11 +18,21 @@ const Toggleable = forwardRef(({ buttonLabel, children }, refs) => {
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{buttonLabel}</button>
+        <button
+          onClick={toggleVisibility}
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        >
+          {buttonLabel}
+        </button>
       </div>
       <div style={showWhenVisible}>
         {children}
-        <button onClick={toggleVisibility}>cancel</button>
+        <button
+          onClick={toggleVisibility}
+          className="mt-2 rounded bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-300"
+        >
+          cancel
+        </button>
       </div>
     </div>
   );

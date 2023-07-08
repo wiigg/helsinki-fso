@@ -10,23 +10,22 @@ const Notification = () => {
   const message = notification.message;
   const colour = notification.colour;
 
-  const showStyle = {
-    color: "white",
-    background: colour,
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  };
+  let bgColor;
+  switch (colour) {
+    case "success":
+      bgColor = "bg-green-400";
+      break;
+    case "error":
+      bgColor = "bg-red-400";
+      break;
+    case "info":
+    default:
+      bgColor = "bg-blue-400";
+  }
 
-  const hideStyle = {
-    display: "none",
-  };
+  const style = `${bgColor} text-white text-lg rounded p-3 mb-4`;
 
-  const style = message ? showStyle : hideStyle;
-
-  return <div style={style}>{message}</div>;
+  return <div className={message ? style : "hidden"}>{message}</div>;
 };
 
 export default Notification;

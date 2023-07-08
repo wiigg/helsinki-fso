@@ -27,39 +27,62 @@ const Login = () => {
       setUsername("");
       setPassword("");
 
-      notify("successful login", "blue");
+      notify("successful login", "info");
       navigate("/");
     } catch (exception) {
-      notify("wrong username or password", "red");
+      notify("wrong username or password", "error");
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        username{" "}
-        <input
-          id="username"
-          type="text"
-          value={username}
-          name="username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password{" "}
-        <input
-          id="password"
-          type="password"
-          value={password}
-          name="password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button id="loginButton" type="submit">
-        login
-      </button>
-    </form>
+    <div className="mx-auto mt-8 w-full max-w-sm">
+      <form
+        onSubmit={handleLogin}
+        className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
+      >
+        <div className="mb-4">
+          <label
+            className="mb-2 block text-sm font-bold text-gray-700"
+            htmlFor="username"
+          >
+            username
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            name="username"
+            onChange={({ target }) => setUsername(target.value)}
+            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            className="mb-2 block text-sm font-bold text-gray-700"
+            htmlFor="password"
+          >
+            password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            name="password"
+            onChange={({ target }) => setPassword(target.value)}
+            className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            id="loginButton"
+            type="submit"
+            className="focus:shadow-outline hover:bg-redx-700 rounded bg-red-500 px-4 py-2 font-bold text-white focus:outline-none"
+          >
+            sign in
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
