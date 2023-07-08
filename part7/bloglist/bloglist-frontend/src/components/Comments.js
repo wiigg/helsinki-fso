@@ -19,7 +19,6 @@ const CreateComment = ({ blog }) => {
 
   const createCommentMutation = useMutation(blogService.createComment, {
     onSuccess: (createdComment) => {
-      console.log(createdComment.blog);
       const allBlogs = queryClient.getQueryData("blogs");
       const updatedBlogs = allBlogs.map((blog) =>
         blog.id === createdComment.blog

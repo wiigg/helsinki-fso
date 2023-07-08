@@ -34,12 +34,11 @@ const CreateBlog = ({ setBlogs }) => {
   if (!loggedInUser) return null;
 
   return (
-    <div>
+    <div className="mb-4 mt-4">
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
         <h2 className="mb-4 text-2xl font-semibold">Add new</h2>
         <BlogForm createBlog={createBlog} />
       </Toggleable>
-      <br />
     </div>
   );
 };
